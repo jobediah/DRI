@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <link rel="icon" href="https://getbootstrap.com/favicon.ico">
+    <title>Jody's How-to Guide'</title>
+    <!-- Bootstrap core CSS -->
+    <link href="stylesheets/bootstrap-3.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+        
+    <!-- Custom styles for this template -->
+    <link href="stylesheets/bootstrap-3.3.6/docs/examples/navbar-fixed-top/navbar-fixed-top.css" rel="stylesheet">
+
+ 
+</head>
+
+
+<body>
+    
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">API DATA TO D3 VISUALIZATION</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/">About</a></li>
+                    <li><a href="/gettingstarted">Getting Started</a></li>
+                    <li><a href="/api">Data APIs</a></li>
+                    <li><a href="/python_rest">Python Request</a></li>
+                    <li><a href="/d3">D3 Graphs</a></li>
+                    <li><a href="/chart">Demo</a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+    </nav>
+ 
+    <div class="container">
+ 
+        <div class="Content">
+        <h2>Using D3.js for data visualization</h2>
+        <p>At this point in the tutorial we have requested data, parsed it into a convenient format, and are ready to view it in an intuitive format. A widely used and powerful tool for data visualization is the Javascript library D3.js (data-driven documents). D3.js uses HTML, SVG, and CSS to create dyanmic, interactive charts and graphs among other visualizations. D3.js builds these charts by binding your data to the Document Object Model (DOM) and then through a data-driven procees, transforming the document.
+        </p><br>
+        <p> To begin with, either download D3.js <a href="https://github.com/mbostock/d3/releases/download/v3.5.16/d3.zip">here</a>, or link to it directly in your index.html file.
+        </p><br>
+        <pre>
+        &lt!DOCTYPE html&gt
+        &lthtml lang="en"&gt
+            &lthead&gt
+                &ltscript src="https://d3js.org/d3.v3.min.js" charset="utf-8"&gt&lt/script&gt
+            &lt/head&gt
+            &ltbody&gt
+            &lt/body&gt
+        &lt/html&gt
+        
+        &ltscript&gt
+            Our javascript with D3.js goes here.
+        &lt/script&gt
+        </pre><br><br>
+
+        <p>Next, we need to manipulate the body of our index.html file in two ways. First, by calling a javascript function which will use D3.js to create an svg element. Note that we have passed our data into the function using Jinja2 templating. Second, by embedding a svg element directly into the body portion of our hmtl document. We define the width and height of the svg element.
+        </p><br>
+        <pre>
+        &ltbody&gt
+            &ltbody onload="Chart({{ data }})"&gt
+            &ltsvg id="graph" width="800" height="400"&gt&lt/svg&gt
+        &lt/body&gt
+        </pre><br><br>
+        
+        <p>Next, we use D3.js to use CSS3 selectors to grab our svg DOM element in our javascript function located at the end of our index.html file. To do this we use the syntax .select(#&ltid name&gt). We then will add a few constraints to our element.
+        </p><br>
+        <pre>
+        &ltscript&gt
+        function Chart(data) {
+            var display = d3.select("#graph")
+        &lt/script&gt
+        </pre><br><br>
+        
+        <p>Before we can chart our data, we need to set the scales of the x and y axis so they will dynamically adjust when we display data with various ranges. We'll use the D3.js scale.linear function, which constructs a linear scale based on a given range. To set this range we'll use a range of from the left margin to a width that leaves enough space for a right margin. The range will set the area we can use for our scale; however, we have yet to set the scale according to our dataset. To do this we will use .domain to set our min and max range for our dataset. In order to do this we will use D3.js to analyze our list of data to find the min and max numbers for both the x and y axis.
+        </p><br>
+        <pre>
+        &ltscript&gt
+            x = d3.scale.linear().range([60, 760])
+            xMin = d3.min(data, function(d) {return (parseInt(d.debt) - 5);})
+            xMax = d3.max(data, function(d) {return parseInt(d.debt, 10);})
+            xRange = x.domain([xMin, xMax])
+            
+            y = d3.scale.linear().range([360, 40])
+            yMin = d3.min(data, function(d) {return (parseInt(d.earnings) - 5);})
+            yMax = d3.max(data, function(d) {return parseInt(d.earnings, 10);})
+            yRange = y.domain([yMin, yMax]);
+        &lt/script&gt
+        </pre><br>
+        <p>To create our axis, we'll use d3.svg.axis() to draw references lines. The .scale([&ltscale&gt]) sets the scale and returns the axis. The .orient([&ltorientation&gt]) is similar except that it returns the orientation. We aren't using them in this demo, but .ticks(&ltarguments&gt) sets ticks for the x and y axis.
+        </p><br>
+        <pre>
+        &ltscript&gt
+            xAxis = d3.svg.axis()
+            .scale(xRange);
+        
+            yAxis = d3.svg.axis()
+            .scale(yRange)
+            .orient("left");
+        &lt/script&gt
+        </pre><br>
+        
+        <p>D3.js allows the use of operators to the element you created, in our case display is our element. A particularly useful operator is .append(&ltelement&gt), which appends a new element as the last child. Here we are appending another svg group (svg:g) to our current svg element. After appending the element to our svg graph we need to attach our axis by using .call().
+        </p><br>
+        <pre>
+        &ltscript&gt
+            display.append("svg:g")
+            .attr("transform", "translate(0," + (360) + ")")
+            .call(xAxis);
+        
+            display.append("svg:g")
+            .attr("transform", "translate(" + (60) + ",0)")
+            .call(yAxis);
+        &lt/script&gt
+        </pre><br>
+        
+        <p> Finally, after setting up our x and y axis, we can fill the graph with our data. We will represent our data points as a scatter plot, but we'll make them a little bit bigger. Essentially, we want to add html attributes to a new circle element in the form of &ltcircle cx="40" cy="60" r="10"&gt&lt/circle&gt. To do this, we will create a new element by using selectAll(), we use selectAll in place of select because we want to capture several elements. We need to bind our data to these circles so we will add on .data(data). However, we have come to a problem, how do we dynamically create enough circles for our data? D3.js provides a solution with the .enter() feature. This allows the user to create new circles when needed. Lastly we want to assign the x and y coordinates of the svg circle (cx and cy) according to our x and y axis. We can also assign other attributes such as the border color, radius, and fill color ("stroke", "r", and "fill"). 
+        </p><br>
+        <pre>
+        &ltscript&gt
+            var circles = display.selectAll("circle").data(data);
+            circles.enter().append("svg:circle")
+            .attr("cx", function(d) {
+            return xRange(d.debt);
+            })
+            .attr("cy", function(d) {    
+            return yRange(d.earnings);
+        &lt/script&gt
+        </pre><br><br>
+        
+        <h4>Now that you've gone through the tutorial, check out the demo!
+        </h4><br>
+        </div>
+ 
+ 
+        <br><br><br><br>
+        <!-- Site footer -->
+        <div class="footer">
+            <p>CS 496, Winter 2016</p>
+        </div>
+ 
+    </div>
+    <!-- /container -->
+ 
+ 
+</body>
+ 
+</html>

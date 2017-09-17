@@ -1,0 +1,70 @@
+
+<html>
+<head>
+  <meta charset="UTF-8"> 
+  <title>Jody's D3 map</title>
+  <script src='https://d3js.org/d3.v4.min.js'></script>
+
+</head>
+<style>
+.subunit-boundary {
+  fill: none;
+  stroke: #777;
+  stroke-dasharray: 2,2;
+  stroke-linejoin: round;
+}
+</style>
+<body>
+  <script>
+
+var width = 700,
+    height = 750;
+
+var svg = d3.select('body')
+  .append('svg')
+  .attr('width', width)
+  .attr('height', height);
+
+var g = svg.append('g');
+
+var albersProjection = d3.geoAlbers()
+  .scale(4000)
+  .rotate([115, 0])
+  .center([-5, 40])
+  .translate([width/2, height/2]);
+
+var geoPath = d3.geoPath()
+    .projection(albersProjection);
+
+d3.json("USA_NV.json", function(json){
+  g.selectAll('path')
+  .data(json.features)
+  .enter()
+  .append('path')
+  .attr('fill', '#cdd')
+  .attr('d', geoPath)
+  .attr('stroke', '#777');
+});
+
+var city = svg.append('g');
+
+d3.json("NV_cities.json", function(json){
+  city.selectAll('path')
+  .data(json.features)
+  .enter()
+  .append('path')
+  .attr('fill', '#900')
+  .attr('stroke', '#999')
+  .attr('d', geoPath)
+  .on('click', function(){
+    console.log("HELLO");
+    d3.select(this).remove();
+    });
+});
+
+
+
+  </script>
+</body>
+</html>
+

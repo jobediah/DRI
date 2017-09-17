@@ -1,0 +1,44 @@
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /stylesheets
+  static_dir: stylesheets
+
+- url: /
+  script: main.app
+
+- url: /test
+  script: main.app
+
+
+- url: /gettingstarted
+  script: main.app
+
+- url: /api
+  script: main.app
+
+- url: /python_rest
+  script: main.app
+
+- url: /d3
+  script: main.app
+
+- url: /chart
+  script: main.app
+
+- url: /chart2
+  script: main.app
+  
+- url: /map
+  script: main.app
+  
+- url: /json
+  script: main.app
+
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest

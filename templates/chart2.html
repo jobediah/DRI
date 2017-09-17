@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            
+    <link rel="icon" href="https://getbootstrap.com/favicon.ico">
+    <title>Jody's How-to Guide'</title>
+    <!-- Bootstrap core CSS -->
+    <link href="stylesheets/bootstrap-3.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+        
+    <!-- Custom styles for this template -->
+    <link href="stylesheets/bootstrap-3.3.6/docs/examples/navbar-fixed-top/navbar-fixed-top.css" rel="stylesheet">
+      
+        
+        <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    
+        <style>
+            .axis path {
+            fill:none;
+            stroke:#777;
+            shape-rendering:crispEdges;
+            }
+                        
+            .axis text {
+                font-family:Arial;
+                font-size:14px;
+            }
+        
+            .f {
+                margin-top: 40px;
+                margin-right: 150px;
+                margin-left: 80px;
+            }
+        </style>
+                        
+    </head>
+    
+    <body onload="Chart({{ data }})">
+        <!-- Fixed navbar -->
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">API DATA TO D3 VISUALIZATION</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="/">About</a></li>
+                        <li><a href="/gettingstarted">Getting Started</a></li>
+                        <li><a href="/api">Data APIs</a></li>
+                        <li><a href="/python_rest">Python Request</a></li>
+                        <li><a href="/d3">D3 Graphs</a></li>
+                        <li><a href="/chart">Demo</a></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+        
+        <form action="/chart2" method="get" class="f">
+            <p>Enter a state post code (ex CO, OR):</p>
+            <input type="text" name="state"<br>
+            <input type="submit" value="Submit">
+        </form>
+        <div class="container">
+            
+            <div id="D3line" class="jumbotron">
+                <h2>Amount of higher education debt compared to earnings by state</h2>
+                <h5>Avg debt, Avg earnings (x,y)</h5>
+                <h6>Each dot represents the averages for one college/univeristy in the state</h6>
+                <svg id="graph" width="800" height="400"></svg>
+            </div>
+            
+            
+            <div class="footer">
+                <p>CS 496, Winter 2016</p>
+            </div>
+            
+        </div>
+        
+    </body>
+    
+</html>
+
+
+
+<script>
+    function Chart(data) {
+        console.log(data)
+        var display = d3.select("#graph")
+        
+        x = d3.scale.linear().range([60, 760])
+        xMin = d3.min(data, function(d) {return (parseInt(d.debt) - 5);})
+        xMax = d3.max(data, function(d) {return parseInt(d.debt, 10);})
+        xRange = x.domain([xMin, xMax])
+
+        y = d3.scale.linear().range([350, 40])
+        yMin = d3.min(data, function(d) {return (parseInt(d.earnings) - 5);})
+        yMax = d3.max(data, function(d) {return parseInt(d.earnings, 10);})
+        yRange = y.domain([yMin, yMax]);
+        
+        xAxis = d3.svg.axis()
+        .scale(xRange);
+        
+        yAxis = d3.svg.axis()
+        .scale(yRange)
+        .orient("left");
+        
+        display.append("svg:g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + (360) + ")")
+        .call(xAxis);
+        
+        display.append("svg:g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(" + (60) + ",0)")
+        .call(yAxis);
+        
+        
+        var circles = display.selectAll("circle").data(data);
+        circles.enter().append("svg:circle")
+        .attr("stroke", "black")
+        .attr("r", 6)
+        .attr("cx", function(d) {
+            return xRange(d.debt);
+        })
+        .attr("cy", function(d) {
+            return yRange(d.earnings);
+        })
+        .style("fill", "#58ACFA")        
+    }
+
+</script>

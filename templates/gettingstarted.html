@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <link rel="icon" href="https://getbootstrap.com/favicon.ico">
+    <title>Jody's How-to Guide'</title>
+    <!-- Bootstrap core CSS -->
+    <link href="stylesheets/bootstrap-3.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+        
+    <!-- Custom styles for this template -->
+    <link href="stylesheets/bootstrap-3.3.6/docs/examples/navbar-fixed-top/navbar-fixed-top.css" rel="stylesheet">
+
+ 
+</head>
+
+
+<body>
+    
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">API DATA TO D3 VISUALIZATION</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/">About</a></li>
+                    <li><a href="/gettingstarted">Getting Started</a></li>
+                    <li><a href="/api">Data APIs</a></li>
+                    <li><a href="/python_rest">Python Request</a></li>
+                    <li><a href="/d3">D3 Graphs</a></li>
+                    <li><a href="/chart">Demo</a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+    </nav>
+ 
+    <div class="container">
+ 
+        <div class="Content">
+        <h2>Get started here!</h2>
+        <p>In this tutorial we will be using Google App Engine (GAE) as our cloud platform using Python. The tutorial will follow these steps and include starting at google's GAE documents. Most of the information provided in this tutorial will focuse on getting data from the College Scoreboard API and data visualization using D3.js.
+        <ul> <a href="https://cloud.google.com/appengine/downloads/#Google_App_Engine_SDK_for_Python">Python SDK for app engine at cloud.google.com</a> </ul>
+        <ul><a href="https://cloud.google.com/appengine/docs/python/gettingstartedpython27/introduction">A quick tutorial on the basics of GAE, webapp2, and using templates at cloud.google.com.</a></ul>
+        <ul><a href="/api">A source which will provide free data, covered here in Data API.</a></ul>
+        <ul><a href="/python_rest">A way to get that data into our program, covered here in Python Request.</a></ul>
+        <ul><a href="/d3">Lastly, a way to visualize that data, covered here in D3 graphs.</a></ul>
+        </p><br>
+        <h3>GAE basic components:</h3>
+        <p>We will have three main files, a congifuration yaml file, a python file, and an html file with javascript. Our files will follow this skeleton.
+        <p>We'll follow GAE naming conventions and call this file app.yaml. Our url handlers and libraries will go here.
+        </p>
+        <pre>
+            version: 1
+            runtime: python27
+            api_version: 1
+            threadsafe: yes
+            
+            # Add additional url handlers here
+            handlers:
+            - url: /*
+              srcipt: main
+            
+            # Add libraries here
+            libraries:
+            - name: webapp2
+              version: latest
+            - name: jinja2
+              version: latest
+        </pre><br><br>
+        <p>Our python program will use the libraries webapp2 and jinja2. Webapp2 is responsible for receiving and routing requests and building reponses. Jinja2 is our Python template engine that will allow us to pass our data to our html file.
+        </p>
+        <pre>
+            import webapp2
+            import jinja2
+            
+            JINJA_ENVIRONMENT = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(os.path.dirname(__file__) + '/templates'),
+            extensions=['jinja2.ext.autoescape'],
+            autoescape=True)
+
+            # Our main handler will display the results of our chart via the template_values on
+            # our index.html file.
+            class MainHandler(webapp2.RequestHandler):
+                def get(self):
+                template_values = {}
+                template = JINJA_ENVIRONMENT.get_template('index.html')
+                self.response.write(template.render(template_values)))
+            
+            app = webapp2.WSGIApplication([
+            ('/', MainHandler), #Add handlers here!
+            ], debug=True)
+        </pre><br><br>
+       <p>We use a standard html file to display our results. Let's call it index.html. In our index.html file, we'll include javascript, particularly D3.js. We'll go into more detail in the D3 Graph page.
+       </p><br><br>
+       <h4>Now that we have all our basic parts, move onto Data API to learn how to use College Scoreboard to get some useful data.
+       </h4><br>
+        </div>
+ 
+        <br><br><br><br>
+        <!-- Site footer -->
+        <div class="footer">
+            <p>CS 496, Winter 2016</p>
+        </div>
+ 
+    </div>
+    <!-- /container -->
+ 
+ 
+</body>
+ 
+</html>

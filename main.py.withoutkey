@@ -1,0 +1,154 @@
+#!/usr/bin/env python
+#
+
+import os
+from urllib2 import Request, urlopen, URLError
+import json
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+import jinja2
+import webapp2
+
+JINJA_ENVIRONMENT = jinja2.Environment(
+                                       loader=jinja2.FileSystemLoader(os.path.dirname(__file__) + '/templates'),
+                                       extensions=['jinja2.ext.autoescape'],
+                                       autoescape=True)
+
+
+def getData(state):
+
+    api_url = "https://api.data.gov/ed/collegescorecard/v1/schools?school.state=%s&fields=school.name,id,2011.aid.median_debt.completers.overall,2011.repayment.1_yr_repayment.completers,2011.earnings.10_yrs_after_entry.working_not_enrolled.mean_earnings" % (state)
+    url = '%s&api_key=%s' % (api_url, api_key)
+    request = Request(url)
+    response = urlopen(request)
+    data = response.read()
+    d = json.loads(data)
+    item = d['results']
+    l = []
+    for i in item:
+        if i['2011.aid.median_debt.completers.overall'] == None or i['2011.earnings.10_yrs_after_entry.working_not_enrolled.mean_earnings'] == None:
+            continue
+        l.append({'debt': i['2011.aid.median_debt.completers.overall'], 'earnings':i['2011.earnings.10_yrs_after_entry.working_not_enrolled.mean_earnings']})
+
+    return l
+    
+def getFluData():
+    geo_data = []
+ 
+    url = 'http://api.flutrack.org/?time=7'
+    request = Request(url)
+    response = urlopen(request)
+    data = response.read()
+    data = json.loads(data)
+
+    dict = {}
+    dict["type"] = "FeatureCollection"
+    
+    for d in data:     
+        feature = {}
+        point = {}
+        prop = {}
+        
+        feature["type"] = "Feature"
+        prop["tweet"] =  str(d.get("tweet_text"))
+        point["type"] = "Point"
+        
+        coordinates = [str(d.get("longitude")), str(d.get("latitude"))]
+        point["coordinates"] = coordinates
+        
+        feature["geometry"] = point
+        feature["properties"] = prop
+        geo_data.append(feature)
+        
+    dict["features"] = geo_data
+
+    return dict
+
+class MainHandler(webapp2.RequestHandler):
+    def get(self):
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('index.html')
+        self.response.write(template.render(template_values))
+
+
+class TestHandler(webapp2.RequestHandler):
+    def get(self):
+        api_url = "https://api.data.gov/ed/collegescorecard/v1/schools?id=209542&fields=school.name,2011.earnings.6_yrs_after_entry.mean_earnings.female_students,2011.earnings.6_yrs_after_entry.mean_earnings.male_students"
+        url = '%s&api_key=%s' % (api_url, api_key)
+        try:
+            request = Request(url)
+            response = urlopen(request)
+            data = response.read()
+            d = json.loads(data)
+            self.response.write(d)
+        except urllib2.URLError, e:
+            handleError(e)
+
+
+class Start(webapp2.RequestHandler):
+    def get(self):
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('gettingstarted.html')
+        self.response.write(template.render(template_values))
+
+class API(webapp2.RequestHandler):
+    def get(self):
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('api.html')
+        self.response.write(template.render(template_values))
+
+class PythonRest(webapp2.RequestHandler):
+    def get(self):
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('python_rest.html')
+        self.response.write(template.render(template_values))
+
+class D3(webapp2.RequestHandler):
+    def get(self):
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('d3.html')
+        self.response.write(template.render(template_values))
+
+class ChartIt(webapp2.RequestHandler):
+    def get(self):
+        template_values = {}
+        template = JINJA_ENVIRONMENT.get_template('chart.html')
+        self.response.write(template.render(template_values))
+
+class ChartIt2(webapp2.RequestHandler):
+    def get(self):
+        state = self.request.get('state')
+        data = getData(state)
+        template_values = {'data':data}
+        template = JINJA_ENVIRONMENT.get_template('chart2.html')
+        self.response.write(template.render(template_values))
+
+class MapIt(webapp2.RequestHandler):
+    def get(self):
+        data = getFluData()
+        template_values = {"data":data}
+        template = JINJA_ENVIRONMENT.get_template('chart4.html')
+        self.response.write(template.render(template_values))
+        
+class JSON(webapp2.RequestHandler):
+    def get(self):
+        template_values = {"data":""}
+        template = JINJA_ENVIRONMENT.get_template('USA_States.json')
+        self.response.write(template.render(template_values))
+
+app = webapp2.WSGIApplication([
+                               ('/', MainHandler),
+                               ('/test', TestHandler),
+                               ('/gettingstarted',Start),
+                               ('/api',API),
+                               ('/python_rest',PythonRest),
+                               ('/d3',D3),
+                               ('/chart',ChartIt),
+                               ('/chart2',ChartIt2),
+                               ('/map',MapIt),
+                               ('/json',JSON),
+                               ], debug=True)
+

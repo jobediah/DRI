@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <link rel="icon" href="https://getbootstrap.com/favicon.ico">
+    <title>Jody's How-to Guide'</title>
+    <!-- Bootstrap core CSS -->
+    <link href="stylesheets/bootstrap-3.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+        
+    <!-- Custom styles for this template -->
+    <link href="stylesheets/bootstrap-3.3.6/docs/examples/navbar-fixed-top/navbar-fixed-top.css" rel="stylesheet">
+
+ 
+</head>
+
+
+<body>
+    
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">API DATA TO D3 VISUALIZATION</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/">About</a></li>
+                    <li><a href="/gettingstarted">Getting Started</a></li>
+                    <li><a href="/api">Data APIs</a></li>
+                    <li><a href="/python_rest">Python Request</a></li>
+                    <li><a href="/d3">D3 Graphs</a></li>
+                    <li><a href="/chart">Demo</a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+    </nav>
+ 
+    <div class="container">
+ 
+        <div class="Content">
+            <h2>Make a request in python.</h2>
+            <p>Now that we know where to get our data we need to be able to make a request from our main.py file. Urllib2 is a python module that has several useful features to help us make HTTP requests and include features such as making requests, url fetching, and error handling. Below is the basic code to make a request. Additionally, we will parse the data into a list with x and y keypairs to make it easier to graph our data in the next section. Go ahead and create your own function to call and parse data.
+            </p>
+            <p>We'll add the following code to our main.py file above our MainHandler class.</p><br><br>
+            <pre>
+                # import urllib
+                from urllib2 import Request, urlopen, URLError
+                
+                def getData(state):
+                    # define your api url and key
+                    api_url = "&ltyour API url&gt"
+                    api_key = "&ltyour API key&gt"
+                    l = []
+                    
+                    # construct your url with the url and key
+                    url = '%s&api_key=%s' % (api_url, api_key)
+                    
+                    #Use request
+                    try:
+                        request = Request(url)
+                        response = urlopen(request)
+                        d = response.read()
+                    
+                        # Convert the string to json data to easily parse the data
+                        data = json.loads(data)
+                    
+                    # Reformat the data using a list with x and y key pairs
+                    
+                        for i in data:
+                            l.append({'x': i['&ltyour json field&gt'], 'y':i['&ltyour json field&gt']})
+                
+                        return l
+                       
+                    # handle errors if request goes wrong
+                    except urllib2.URLError, e:
+                        handleError(e)
+                    
+                
+            </pre><br><br>
+            
+        <p> Now we need to call this function from our MainHandler class and pass it on to our index.html file. Note, we are using Jinja2 templating feature to pass our data to the index.html file. In the html file we'll use this to pass the data to our javascript function. 
+        </p><br>
+        <pre>
+        class MainHandler(webapp2.RequestHandler):
+            def get(self):
+                data = getData()
+                template_values = {'data':data}
+                template = JINJA_ENVIRONMENT.get_template('chart2.html')
+                self.response.write(template.render(template_values))
+        </pre><br><br>
+        
+        <p>To get more information visit either <a href="https://docs.python.org/2/howto/urllib2.html">python docs</a> or <a href="https://cloud.google.com/appengine/docs/python/urlfetch/">google's cloud documentation.</a>
+        </p><br><br>
+        
+        <h4>Now to the fun part. We've got our data, let's move on to making a pretty graph with it.
+        </h4><br>
+        
+            
+        </div>
+ 
+ 
+        <br><br><br><br>
+        <!-- Site footer -->
+        <div class="footer">
+            <p>CS 496, Winter 2016</p>
+        </div>
+ 
+    </div>
+    <!-- /container -->
+ 
+ 
+</body>
+ 
+</html>

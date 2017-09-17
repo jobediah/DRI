@@ -1,0 +1,81 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Reno"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -119.81689453125,
+          39.52099229357195
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Las Vegas"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -115.147705078125,
+          36.15561783381855
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tonopah"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.23510742187501,
+          38.06539235133249
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ely"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -114.89501953124999,
+          39.257778150283364
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Elko"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -115.75195312499999,
+          40.82212357516945
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Winnemucca"},
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.72949218749999,
+          40.98819156349393
+        ]
+      }
+    }
+  ]
+}

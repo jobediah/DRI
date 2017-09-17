@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <link rel="icon" href="https://getbootstrap.com/favicon.ico">
+    <title>Jody's How-to Guide'</title>
+    <!-- Bootstrap core CSS -->
+    <link href="stylesheets/bootstrap-3.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+        
+    <!-- Custom styles for this template -->
+    <link href="stylesheets/bootstrap-3.3.6/docs/examples/navbar-fixed-top/navbar-fixed-top.css" rel="stylesheet">
+
+ 
+</head>
+
+
+<body>
+    
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">API DATA TO D3 VISUALIZATION</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/">About</a></li>
+                    <li><a href="/gettingstarted">Getting Started</a></li>
+                    <li><a href="/api">Data APIs</a></li>
+                    <li><a href="/python_rest">Python Request</a></li>
+                    <li><a href="/d3">D3 Graphs</a></li>
+                    <li><a href="/chart">Demo</a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+    </nav>
+ 
+    <div class="container">
+ 
+        <div class="Content">
+        </div>
+        <h2>College Scoreboard API</h2><br>
+        <p>A prequisite of data visualization is having a dataset. Most of us don't have access to tools necessary for data collecting, such as users on a social media site or answers to a questionaire. Fortunately for us big data afficionados, we can get our hands on public data. One of the best sources of data is our own government who regularly collects data and statistics on a variety of topics. Some of the available datasets include:
+            <ul>
+                <li>Department of Agriculture</li>
+                <li>Department of Commerce</li>
+                <li>Department of Education</li>
+                <li>Food and Drug Administration</li>
+                <li>National Aeronautics and Space Administration</li>
+                <li>National Institutes of Health</li>
+                <li>National Renewable Energy Labortory</li>
+                <li>and more!</li>
+            </ul>
+            All of these agencies can provide you with your own dataset to use. For information, follow this link <a href="https://api.data.gov">api.data.gov</a>.
+        </p><br>
+        <p>For our purposes we are going to use the College Scoreboard API, <a href="http://api.data.gov/docs/ed/">api.data.gov/docs/ed/</a>. First, you must sign up to get your own API key, <a href="https://api.data.gov/signup/">api.data.gov/signup/</a>.
+        </p><br>
+        <p>The main query of College Scoreboard is api.data.gov/ed/collegescorecard/v1/schools. We will build off of this url to request data. Note: the following is a smaller subsection of all the available data, but it should give enough description to cover most queries that you might make. To view a complete listing of all the available request variables visit this <a href="https://collegescorecard.ed.gov/assets/CollegeScorecardDataDictionary-09-08-2015.csv">link</a>.
+        <dl>
+                <dt>Basic call:</dt>
+            <dd><p>The most basic call that can be made is the root along with the institution ID (IPEDS Unit ID). To download a list of all higher education IDs click <a href="https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=3&ved=0ahUKEwiUypeG3JHLAhVIzGMKHdlxA18QFggkMAI&url=https%3A%2F%2Fdata.mhec.state.md.us%2FMAC2Pilot%2FOPEID.xls&usg=AFQjCNFLJrET4AiW8JysO_PZ-jXqWz1O3Q&sig2=TU9dMowNMWerJ9-aWphysg">here</a>. We'll use Oregon State's ID number, 209542. An example request would be:
+                api.data.gov/ed/collegescorecard/v1/schools?id=209542. We need to append your api key to the end which gives us api.data.gov/ed/collegescorecard/v1/schools?id=209542&ampapi_key=&ltyour api key&gt. The returned data will be a string that can be formatted to json. All data associated with Oregon State will be returned, inlcuding all information in the following list.</p>
+                <p>We can also specify by state, using the state's postal code abbreviation; api.data.gov/ed/collegescorecard/v1/schools?school.state=OR&ampapi_key=&ltyour api key&gt. Additionally we can sort by city or zipcode using the same format, but with school.city or school.zip
+                </p>
+                <p>For each school that is requested, a massive amount of data that spans 20 yrs of collection is returned. The following items in the list will enable you to request certain data fields.
+                </p>
+                </dd><br>
+            <dt>School:</dt>
+            <dd>
+            <p>Included in the category is a number of fields that provide descriptive information about the the school. At this point the structure of the request requires that you specify variables within the fields key, such as, api.data.gov/ed/collegescorecard/v1/schools?id=209542&ampfields=school.name&ampapi_key=&ltyour api key&gt which will request the school name of Oregon State University. The example output is:<br><br>
+                <pre>
+                {
+                    u'results':
+                    [
+                        {u'school.name': u'Oregon State University'}
+                    ],
+                    u'metadata':
+                        {u'per_page': 20, u'total': 1, u'page': 0}
+                }
+                </pre>
+                Additional fields can be requested including:
+                <li>School url: school.school_url</li>
+                <li>Type of degree awarderd: school.degrees_awarded.predominant_recoded </li>
+                <li>Flag for main campus (0 is main campus): school.main_campus</li>
+                <li>Number of branches: school.branches</li>
+                <li>Religious affiliation: school.religious_affiliation</li>
+            </p>
+            </dd><br>
+            <dt>Admissions:</dt>
+            <dd><p>This category provides statistics on the amount of students admitted and various SAT and ACT scores. A year must be provided and requests are in the form of <year>.admissions<type of data>. For example, to get the average SAT score we would build upon our previous example add our admissions field to our previous request, api.data.gov/ed/collegescorecard/v1/schools?id=209542&ampfields=school.name,2011.admissions.sat_scores.average.overall&ampapi_key=&ltyour api key&gt. The example output is:<br><br>
+            <pre>
+            {
+                u'results':
+                [
+                    {
+                        u'school.name': u'Oregon State University',
+                        u'2011.admissions.sat_scores.average.overall': 1090.0
+                    }
+                ],
+                u'metadata':
+                    {u'per_page': 20, u'total': 1, u'page': 0}
+            }
+            </pre>
+            Another usefull query is acceptance rate, admissions,admission_rate.overall.
+            </p></dd><br>
+            <dt>Student:</dt>
+            <dd>Student type queries result in data about the demographics of the student body, including the total number of undergraduate students, student number by race, and number of non-resident foreign students. The general syntax is <year>.student.<type of query>. The following is a list of different types of queries.
+            <li>Enrollment: student.enrollment.all</li>
+            <li>Students that are black: student.demographics.race_ethnicity.black</li>
+            <li>Students that are white: student.demographics.race_ethnicity.white</li>
+            <li>Students that are hispanic: student.demographics.race_ethnicity.hispanic</li>
+            <li>Students that are non-resident: student.demographics.race_ethnicity.non_resident_alien</li>
+            <li>Students that are 25 and older: student.share_25_older</li>
+            <li>Students who are first generation: student.share_firstgeneration</li>
+            <li>Students who are female: student.demographics.female_share</li>
+            <li>Average family income: student.demographics.avg_family_income</li>
+            If we use one of these in our previous call, api.data.gov/ed/collegescorecard/v1/schools?id=209542&ampfields=school.name,2011.student.demographics.race_ethnicity.non_resident_alien&ampapi_key=&ltyour api key&gt, it would produce a similar output as below.<br><br>
+            <pre>
+            {
+                u'results':
+                [
+                    {
+                        u'school.name': u'Oregon State University',
+                        u'2011.student.demographics.race_ethnicity.non_resident_alien': 0.0384
+                    }
+                ],
+                u'metadata':
+                    {u'per_page': 20, u'total': 1, u'page': 0}
+            }
+            </pre>
+            </dd><br>
+            <dt>Cost:</dt>
+            <dd>Below are the variables to query for total expected costs and in-state/out-of-state costs.
+            <li>Total amount including living costs: cost.avg_net_price.public</li>
+            <li>In-state tuition: cost.tuition.in_state</li>
+            <li>Out-of-state tuition: cost.tuition.out_of_state</li>
+            Example request url: https://api.data.gov/ed/collegescorecard/v1/schools?id=209542&fields=school.name,2011.cost.tuition.in_state&ampapi_key=&ltyour api key&gt<br><br>
+            <pre>
+            {
+                u'results':
+                [
+                    {
+                        u'school.name': u'Oregon State University',
+                        u'2011.cost.tuition.in_state': 7600
+                    }
+                ],
+                u'metadata':
+                    {u'per_page': 20, u'total': 1, u'page': 0}
+            }
+            </pre>
+            </dd><br>
+            <dt>Aid:</dt>
+            <dd>While there are several variables for use under this category, one of the more useful calls is the median debt by a given year. We'll use this call as an example in our demo.
+            <li>Median debt for students who have completed their education: aid.median_debt.completers.overall</li>
+            Example request url: https://api.data.gov/ed/collegescorecard/v1/schools?id=209542&fields=school.name,2011.aid.median_debt.completers.overall&ampapi_key=&ltyour api key&gt<br><br>
+            <pre>
+            {
+                u'results':
+                [
+                    {
+                        u'school.name': u'Oregon State University',
+                        u'2011.aid.median_debt.completers.overall': 21125.0
+                    }
+                ],
+                u'metadata':
+                    {u'per_page': 20, u'total': 1, u'page': 0}
+            }
+            </pre>
+            </dd><br>
+            <dt>Earnings:</li>
+            <dd>Schools collect data on previous students current earnings. This category allows to get data on average and median earnings which we can separate out into subgroups. Note: we use this variable in our demo.
+            <li>Mean earnings for students who graduated 10 yrs prior and are not currently enrolled in school (Note you can substitute 10 yrs with 8 and 6 yrs): earnings.10_yrs_after_entry.working_not_enrolled.mean_earnings</li>
+            <li>We can separate out the previous request according to gender: earnings.10_yrs_after_entry.mean_earnings.female_students</li>
+            Example request url: https://api.data.gov/ed/collegescorecard/v1/schools?id=209542&fields=school.name,2011.earnings.6_yrs_after_entry.mean_earnings.female_students,2011.earnings.6_yrs_after_entry.mean_earnings.male_students&ampapi_key=&ltyour api key&gt<br><br>
+            <pre>
+            {
+                u'results':
+                [
+                    {
+                        u'school.name': u'Oregon State University',
+                        u'2011.earnings.10_yrs_after_entry.mean_earnings.female_students': 43400,
+                         u'2011.earnings.10_yrs_after_entry.mean_earnings.male_students': 58300
+                    }
+                ],
+                u'metadata':
+                    {u'per_page': 20, u'total': 1, u'page': 0}
+            }
+            </pre>
+            </dd><br>
+            </dl>
+        </p><br><br>
+        <h4>At this point, there are plenty of options to choose from to get data for your own application! Move to Python Rest to learn how to make python api requests. 
+        </h4><br>
+        <br><br><br><br>
+        <!-- Site footer -->
+        <div class="footer">
+            <p>CS 496, Winter 2016</p>
+        </div>
+ 
+    </div>
+    <!-- /container -->
+ 
+ 
+</body>
+ 
+</html209542>
